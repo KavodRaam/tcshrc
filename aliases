@@ -1,0 +1,180 @@
+# ********************************************************************
+# Self-management
+# ********************************************************************
+# Usage:
+# myaliases  -  Print this file to terminal
+# refaliases -  Reload this file into current shell
+# editaliases - Open this file in gvim for editing
+alias   myaliases        'cat /home/raamk/.aliases'
+alias   refaliases       'source /home/raamk/.aliases'
+alias   editaliases      'gvim /home/raamk/.aliases'
+alias   rp               'realpath'
+alias   pwd              'echo $PWD'
+alias   ?                 pwd
+
+# ********************************************************************
+# Navigation
+# ********************************************************************
+# Usage:
+# ..    - Go up one directory
+# ...   - Go up two directories
+# ....  - Go up three directories
+alias   ..               'cd ..'
+alias   ...              'cd ../..'
+alias   ....             'cd ../../..'
+
+# ********************************************************************
+# Editors & Viewers
+# ********************************************************************
+# Usage:
+# gg  - Open file(s) in gvim
+# l <file>     - View file with less (with line numbers, raw control chars)
+alias   gg               'gvim'
+alias   l                'less -L -N'
+
+# ********************************************************************
+# Search, Grep & File Listing
+# ********************************************************************
+# Usage:
+# fgen_debug <ffile> <pattern> - Debug fgen: find .bc files matching pattern
+# cp_fgen_cmd <ffile>          - Copy the fgen.py command from ffile header to clipboard
+# gerp <pattern> <dir>         - Recursive grep with line numbers (grep -rn)
+# sgrep <pattern>              - Search in files from comp.log
+# fgrep <ffile> <pattern>      - Grep pattern in files listed in an ffile
+#                                Example: fgrep ffile.f "eshkol"
+# ffgrep <ffile> <grep_args>   - Grep across ffile file list (external script)
+# ff <name> <dir>              - Case-insensitive find by name, resolve symlinks
+#                                Example: ff my_block /projects/eshkol
+# lls                          - List files: sorted by extension
+# ll                           - List files: sorted by time, human-readable sizes
+# check_size_of <dir>          - Show disk usage of immediate subdirectories
+# delatest <tag_pattern>       - Find latest release tag matching pattern
+alias   fgen_debug       'grep -i '"'"'The bc file'"'"' '"'"'\!:1'"'"' | grep -vi warning | awk '"'"'{print $8}'"'"' | sort -u | grep bc | xargs -I {} grep '"'"'\!:2'"'"' {} -Hnw'
+alias   cp_fgen_cmd      'head "\!:1" | grep "fgen.py" | sed "s/.*\(fgen.py.*\)|/\1/" | x'
+alias   gerp             'grep -rn'
+alias   sgrep            'bash /projects/bental/home/eylonk/bental_release/trunk/fe/vtools/development/eylonk/grep_comp/grep_comp.sh -p \!:*'
+alias   fgrep            'cat "\!:1" | grep -v "^//" | xargs -I {} grep -Hni "\!:2*" {}'
+alias   ffgrep           '/projects/eshkol/home/haggayt/eshkol_release/trunk/fe/itools/grep_by_ffile.tcsh'
+alias   ff               "find -L \!:2 -iname '*'\!:1'*'  -exec readlink -f {} \;"
+alias   lls              "ls -l -X"
+alias   ll               "ls -lshtr"
+alias   check_size_of    "du -h --max-depth=1 \!:1"
+alias   delatest         'find /projects/${P_NAME}/master/db/${P_NAME}/tags/fe/design/* -maxdepth 1 -name "\!:1";ls /projects/${P_NAME}/master/db/${P_NAME}/tags/fe/design/\!:1* | grep "^${P_NAME}_release_[0-9]"| tail -n1'
+
+# ********************************************************************
+# Lock and Unlock Directories & Files
+# ********************************************************************
+# Usage:
+# lockd  / lkd  <dir>  - Recursively lock   directory (chmod 555)
+# unlockd / ulkd <dir> - Recursively unlock directory (chmod 777)
+# lockf  / lkf  <dir>  - Lock   files only (not dirs) under path
+# unlockf / ulkf <dir> - Unlock files only (not dirs) under path
+alias   lockd            'find \!* | xargs -I {} chmod 555 {}'
+alias   unlockd          'find \!* | xargs -I {} chmod 777 {}'
+alias   lkd              'lockd \!*'
+alias   ulkd             'unlockd \!*'
+alias   lockf            'find \!* -type f | xargs -I {} chmod 555 {}'
+alias   unlockf          'find \!* -type f | xargs -I {} chmod 777 {}'
+alias   lkf              'lockf \!*'
+alias   ulkf             'unlockf \!*'
+
+# ********************************************************************
+# Grid & Remote Machines
+# ********************************************************************
+# Usage:
+# live_sj <cmd>            - Submit interactive xterm job to grid (8g mem)
+# dstat                    - Show all grid jobs (qstat -p)
+# dstat_del_mode <mode>    - Kill all jobs matching a queue mode
+#                            Example: dstat_del_mode qw  (kills all queued jobs)
+# job_info <job_name>      - Show info about a named job
+# grid_status              - Show load on specific queues/machines
+# qdel_all                 - Force Delete **ALL** grid applications
+alias   live_sj          'submit_job -mf 8 -mr 8 -batch xterm -geometry 600x60 -bg black -fg gray -fn lucidasanstypewriter-18 -fs 12 -e "\!:*"'
+alias   dstat            'qstat -p'
+alias   dstat_del_mode   'submit_job dstat -u raamk -p -s \!:1 -del'
+alias   job_info         '/projects/common/home/dano/tools/qa $1'
+alias   grid_status      'qstat -F | egrep -E "mbist.q|atpg.q|lx107|lx108|lx141|lx142"'
+alias   qdel_all         'qstat | awk '"'"'NR>2 {print $1}'"'"' | xargs -n1 qdel -f'
+
+# ********************************************************************
+# Safety Overrides
+# ********************************************************************
+# Usage:
+# cp / mv / rm  - Interactive versions: always prompt before overwrite/delete
+alias   cp               'cp -i'
+alias   rm               'rm -i'
+alias   mv               'mv -i'
+
+# ********************************************************************
+# Clipboard Utilities (xclip)
+# ********************************************************************
+# Usage:
+# x              - Pipe stdin to clipboard (strips trailing newline)
+#                  Example: echo "hello" | x
+# px             - Copy current directory path to clipboard
+# rx <path>      - Copy resolved (real) path to clipboard
+# cx <file>      - Copy file contents to clipboard
+# ex <text>      - Copy echoed text to clipboard
+# cf <pattern>   - Extract filename matching pattern from piped input
+# cfx <pattern>  - cf + copy result to clipboard
+# wx <cmd>       - Copy 'which' result (resolved alias path) to clipboard
+alias   x                "tr -d '\n' | xclip -sel clip"
+alias   px               "pwd | x"
+alias   rx               "rp \!* | x"
+alias   cx               "cat \!* | x"
+alias   ex               "echo \!* | x"
+alias   cf               'grep \!:1 | sed '"'"'s/.*[ ]\+\([^ ]*\!:1[^ ]*\)[ ]*.*$/\1/'"'"''
+alias   cfx              "cf \!:1 | x"
+alias   wx               'which \!:1 | sed "s/.*aliased to //" | x'
+
+# ********************************************************************
+# Tools & Applications
+# ********************************************************************
+# Usage:
+# xl <file>     - Open spreadsheet/document in LibreOffice
+# pdf <file>    - Open PDF in Evince viewer
+# vd [args]     - Launch Verdi waveform viewer (50g mem, with SDF)
+# vd_nosdf [a]  - Launch Verdi without SDF loading
+# ya            - Launch Synopsys si_debug (EmbedIT)
+# defacto_html  - Open Defacto SoC Compiler DRC documentation in browser
+# soc_online    - Open SOC online tool in browser
+# vsc           - Launch VS Code on Euclide grid machine
+source /technology/backend_ep/TSMC/N5/flow/TSMC_N5/new_env/ep_env_scripts/r1.0/add_to_tcshrc.csh
+alias   xl               'libreoffice \!:1 &'
+alias   pdf              'evince \!:1 &'
+alias   vd               'submit_job -mf 50g -mr 50 verdi -play ~/verdi_startup -ssf -rcFile ~/novas.rc -logdir ~/verdilogs \!:1 &'
+alias   vd_nosdf         'submit_job -mf 50g -mr 50 verdi -play ~/verdi_startup -ssf -skip_auto_sdf -rcFile ~/novas.rc -logdir ~/verdilogs \!:1 &'
+alias   ya               'submit_job -mf 50g -mr 50 /tools/synopsys/embedit/V-2023.12/bin/si_debug &'
+alias   defacto_html     'submit_job -mf 50g -mr 50 firefox /tools/defacto/SoC_Compiler/11.0.00.121r/SoC_Compiler_11.0.00.121r/doc/soc_compiler/drc.html &'
+alias   soc_online       'submit_job -mf 50g -mr 50 firefox http://soc.xsight.ent/app/index.cgi &'
+alias   vsc              'submit_job euclide -vscode &'
+
+# ********************************************************************
+# Personal Scripts
+# ********************************************************************
+# Usage:
+# calc [args]        - Terminal calculator (-p flag for Python mode, supports **)
+# blast [args]       - Run blast.py on grid (50g)  | blastedit - open in gvim
+# fcast [args]       - Run fcast.py                | fcastedit - open in gvim
+# fcastl [args]      - Run fcastl.py               | fcastledit - open in gvim
+# tv_filter [args]   - Run timing violation filter (100g) | tv_filteredit - open in gvim
+alias   calc             '/projects/alon/work/nimrods/my_scripts/terminal_calculator.sh'
+alias   blast            'submit_job -mf 50g -mr 50 python3 /projects/common/home/raamk/common_release/trunk/fe/itools/sms_tools/blast/blast.py \!*'
+alias   blastedit        'gvim /projects/common/home/raamk/common_release/trunk/fe/itools/sms_tools/blast/blast.py'
+alias   fcast            'python3 /projects/common/home/raamk/common_release/trunk/fe/itools/sms_tools/fcast/fcast.py \!*'
+alias   fcastedit        'gvim /projects/common/home/raamk/common_release/trunk/fe/itools/sms_tools/fcast/fcast.py'
+alias   fcastl           'python3 /projects/common/home/raamk/common_release/trunk/fe/itools/sms_tools/fcast/fcastl.py \!*'
+alias   fcastledit       'gvim /projects/common/home/raamk/common_release/trunk/fe/itools/sms_tools/fcast/fcastl.py'
+alias   tv_filter        'submit_job -mf 100g -mr 100 python3 /projects/common/home/raamk/common_release/trunk/fe/itools/sms_tools/timing_violation_filter/timing_violation_filter.py \!*'
+alias   tv_filteredit    'gvim /projects/common/home/raamk/common_release/trunk/fe/itools/sms_tools/timing_violation_filter/timing_violation_filter.py'
+
+# ********************************************************************
+# Synopsys, Tar & File Transfer
+# ********************************************************************
+# Usage:
+# sftps       - Connect to Synopsys SFTP server (raamkavod@eft.synopsys.com)
+# ct <folder> <files> - Create a tar archive of specified files into folder
+# ut <file>           - Extract a tar archive
+alias   sftps            'sftp raamkavod@eft.synopsys.com'
+alias   ct               'bash /home/eylonk/scripts/create_folder_and_tar.sh'
+alias   ut               'bash /home/eylonk/scripts/untar.sh'
