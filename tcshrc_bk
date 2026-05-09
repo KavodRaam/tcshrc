@@ -1,14 +1,50 @@
-   bindkey -k up "history-search-backward"
-   bindkey -k down "history-search-forward"
-   bindkey '^[[1;5D' backward-word # ctrl+left
-   bindkey '^[[1;5C' forward-word # ctrl+right
-   set complete = enhance
-   set filec
-   set nobeep
-   set autolist
-   set history=1000
-   set histdup=erase
-   set savehist=(1000 merge)
-   unset DISPLAY
-   set prompt = "\n%{\033[38;5;202m%}%T %m:%~>%{\033[0m%} "
-   alias rp "realpath"
+# Enable searching through history using arrow keys (Up/Down) based on current input
+bindkey -k up "history-search-backward"
+bindkey -k down "history-search-forward"
+
+# Bind Ctrl+Left and Ctrl+Right to move backward/forward by one word
+bindkey '^[[1;5D' backward-word   # ctrl+left
+bindkey '^[[1;5C' forward-word    # ctrl+right
+
+# Improve tab-completion behavior (more intelligent matching)
+set complete = enhance
+
+# Enable file name completion
+set filec
+
+# Disable terminal bell on errors or completion
+set nobeep
+
+# Automatically list possible completions if ambiguous
+set autolist
+
+
+### History config
+
+# Keep up to 10,000 commands in memory
+set history=10000
+
+# Remove older duplicate commands (only keep the most recent instance)
+set histdup=erase
+
+# Save 10,000 commands to the history file and merge across sessions
+set savehist=(10000 merge)
+
+
+# Bind arrow keys for prefix-based history search (redundant but ensures compatibility in some terminals)
+bindkey "^[[A" history-search-backward
+bindkey "^[[B" history-search-forward
+
+# Search command history using grep (e.g., hgrep foo)
+alias hgrep 'history | grep \!*'
+
+
+# Unset DISPLAY environment variable (useful to avoid X11 forwarding issues in remote sessions)
+unset DISPLAY
+
+# Set a custom prompt:
+# - Newline before prompt
+# - Orange-colored timestamp (%T)
+# - Hostname (%m) and current directory (%~)
+# - Reset color at the end
+set prompt = "\n%{\033[38;5;202m%}%T %m:%~>%{\033[0m%} "
