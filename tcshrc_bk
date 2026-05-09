@@ -35,9 +35,6 @@ set savehist=(10000 merge)
 bindkey "^[[A" history-search-backward
 bindkey "^[[B" history-search-forward
 
-# Search command history using grep (e.g., hgrep foo)
-alias hgrep 'history | grep \!*'
-
 
 # Unset DISPLAY environment variable (useful to avoid X11 forwarding issues in remote sessions)
 unset DISPLAY
